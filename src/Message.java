@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.*;
 import java.text.*;
 
@@ -13,6 +14,9 @@ public class Message {
     public String Headers;
     public String Body;
 
+    //TODO
+    public String Image;
+
     /* Sender and recipient. With these, we don't need to extract them
        from the headers. */
     private String From;
@@ -23,7 +27,8 @@ public class Message {
 
     /* Create the message object by inserting the required headers from
        RFC 822 (From, To, Date). */
-    public Message(String from, String to, String subject, String text) {
+    //TODO String image
+    public Message(String from, String to, String subject, String text, String file, String filename) {
         /* Remove whitespace */
         From = from.trim();
         To = to.trim();
@@ -31,13 +36,30 @@ public class Message {
         Headers += "To: " + To + CRLF;
         Headers += "Subject: " + subject.trim() + CRLF;
 
+        //TODO
+        Headers += "MIME-version-1.0 " + CRLF;
+        Headers += "Content-Type: multipart/mixed; boundary=seperator " + CRLF;
+        Headers += "--seperator " + CRLF;
+
 	/* A close approximation of the required format. Unfortunately
 	   only GMT. */
         SimpleDateFormat format =
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'");
         String dateString = format.format(new Date());
         Headers += "Date: " + dateString + CRLF;
-        Body = text;
+        Body = text + CRLF;
+        Body += "--seperator " + CRLF;
+        Body += "Content-Type: application/octet-stream; name=" + filename + CRLF;
+        Body += "Content-Disposition: attachment; filename=" + filename + CRLF;
+        Body += "Content-Transfer-Encoding: base64" + CRLF;
+        Body += file + CRLF;
+        Body += "--seperator--" + CRLF;
+        Body += ".";
+
+
+        //TODO
+        Image = file;
+        System.out.println(filename);
     }
 
     /* Two functions to access the sender and recipient. */
@@ -55,19 +77,19 @@ public class Message {
         int fromat = From.indexOf('@');
         int toat = To.indexOf('@');
 
-        if(fromat < 1 || (From.length() - fromat) <= 1) {
+        if (fromat < 1 || (From.length() - fromat) <= 1) {
             System.out.println("Sender address is invalid");
             return false;
         }
-        if(toat < 1 || (To.length() - toat) <= 1) {
+        if (toat < 1 || (To.length() - toat) <= 1) {
             System.out.println("Recipient address is invalid");
             return false;
         }
-        if(fromat != From.lastIndexOf('@')) {
+        if (fromat != From.lastIndexOf('@')) {
             System.out.println("Sender address is invalid");
             return false;
         }
-        if(toat != To.lastIndexOf('@')) {
+        if (toat != To.lastIndexOf('@')) {
             System.out.println("Recipient address is invalid");
             return false;
         }

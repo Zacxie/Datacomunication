@@ -36,7 +36,7 @@ public class SMTPConnection {
         }
         String localhost = (InetAddress.getLocalHost()).getHostName();
         try {
-            sendCommand("HELO " + localhost, 250);
+            sendCommand("EHLO " + localhost, 250);
         } catch (IOException e) {
             System.out.println("HELO failed. Aborting.");
             return;

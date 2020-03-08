@@ -1,7 +1,7 @@
 import java.io.*;
-import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Base64;
 
 /* $Id: MailClient.java,v 1.7 1999/07/22 12:07:30 kangasha Exp $ */
 
@@ -10,11 +10,14 @@ import java.awt.event.*;
  *
  * @author Jussi Kangasharju
  */
+
+//TODO Buttons
 public class MailClient extends Frame {
     /* The stuff for the GUI. */
     private Button btSend = new Button("Send");
     private Button btClear = new Button("Clear");
     private Button btQuit = new Button("Quit");
+    private Button btFiles = new Button("Files");
     private Label serverLabel = new Label("Local mailserver:");
     private TextField serverField = new TextField("", 40);
     private Label fromLabel = new Label("From:");
@@ -30,6 +33,9 @@ public class MailClient extends Frame {
      * Create a new MailClient window with fields for entering all
      * the relevant information (From, To, Subject, and message).
      */
+    private String filename;
+    private String file;
+
     public MailClient() {
         super("Java Mailclient");
 
@@ -62,9 +68,12 @@ public class MailClient extends Frame {
         btSend.addActionListener(new SendListener());
         btClear.addActionListener(new ClearListener());
         btQuit.addActionListener(new QuitListener());
+        btFiles.addActionListener(new FilesListener());
         buttonPanel.add(btSend);
         buttonPanel.add(btClear);
         buttonPanel.add(btQuit);
+        buttonPanel.add(btFiles);
+
 
         /* Add, pack, and show. */
         add(fieldPanel, BorderLayout.NORTH);
@@ -90,24 +99,25 @@ public class MailClient extends Frame {
             }
 
             /* Check that we have the sender and recipient. */
-            if((fromField.getText()).equals("")) {
+            if ((fromField.getText()).equals("")) {
                 System.out.println("Need sender!");
                 return;
             }
-            if((toField.getText()).equals("")) {
+            if ((toField.getText()).equals("")) {
                 System.out.println("Need recipient!");
                 return;
             }
 
             /* Create the message */
+            //TODO FileListener
             Message mailMessage = new Message(fromField.getText(),
                     toField.getText(),
                     subjectField.getText(),
-                    messageText.getText());
+                    messageText.getText(), file, filename);
 
 	    /* Check that the message is valid, i.e., sender and
 	       recipient addresses look ok. */
-            if(!mailMessage.isValid()) {
+            if (!mailMessage.isValid()) {
                 return;
             }
 
@@ -143,6 +153,28 @@ public class MailClient extends Frame {
     class QuitListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             System.exit(0);
+        }
+    }
+
+    //TODO
+    class FilesListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            FileDialog dialog = new FileDialog((Frame) null, "Select File to Open");
+            dialog.setMode(FileDialog.LOAD);
+            dialog.setVisible(true);
+            filename = dialog.getFile();
+            File q = new File("/zhome/d9/0/116926/Downloads/Feels_good_man.jpg");
+            try {
+                FileInputStream reader = new FileInputStream(q);
+                byte[] bytes = new byte[(int) q.length()];
+                reader.read(bytes);
+                file = Base64.getEncoder().encodeToString(bytes);
+             } catch (Exception ee){
+                System.out.println(ee);
+            }
+            System.out.println(file);
+
         }
     }
 }

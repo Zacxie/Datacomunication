@@ -23,6 +23,8 @@ public class Envelope {
     /* The actual message */
     public Message Message;
 
+    public String image;
+
     /* Create the envelope. */
     public Envelope(Message message, String localServer) throws UnknownHostException {
         /* Get sender and recipient. */
