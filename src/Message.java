@@ -37,22 +37,23 @@ public class Message {
         Headers += "Subject: " + subject.trim() + CRLF;
 
         //TODO
-        Headers += "MIME-version-1.0 " + CRLF;
-        Headers += "Content-Type: multipart/mixed; boundary=seperator " + CRLF;
-        Headers += "--seperator " + CRLF;
+        Headers += "MIME-version: 1.0" + CRLF;
+        Headers += "Content-Type: multipart/mixed; boundary=seperator " + CRLF + CRLF;
+        Headers += "--seperator" + CRLF;
 
 	/* A close approximation of the required format. Unfortunately
 	   only GMT. */
         SimpleDateFormat format =
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'");
         String dateString = format.format(new Date());
-        Headers += "Date: " + dateString + CRLF;
+        Headers += "Date: " + dateString ;
         Body = text + CRLF;
-        Body += "--seperator " + CRLF;
+        Body += "--seperator" + CRLF;
         Body += "Content-Type: application/octet-stream; name=" + filename + CRLF;
         Body += "Content-Disposition: attachment; filename=" + filename + CRLF;
         Body += "Content-Transfer-Encoding: base64" + CRLF;
-        Body += file + CRLF;
+        Body += file+CRLF;
+        Body += CRLF;
         Body += "--seperator--" + CRLF;
         Body += ".";
 
