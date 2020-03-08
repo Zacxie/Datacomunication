@@ -29,7 +29,7 @@ public class SMTPConnection {
         toServer = new DataOutputStream(connection.getOutputStream());
 
         String reply = fromServer.readLine();
-        if(parseReply(reply) != 220) {
+        if (parseReply(reply) != 220) {
             System.out.println("Error in connect.");
             System.out.println(reply);
             return;
@@ -37,6 +37,15 @@ public class SMTPConnection {
         String localhost = (InetAddress.getLocalHost()).getHostName();
         try {
             sendCommand("EHLO " + localhost, 250);
+            fromServer.readLine();
+            fromServer.readLine();
+            fromServer.readLine();
+            fromServer.readLine();
+            fromServer.readLine();
+            fromServer.readLine();
+            fromServer.readLine();
+            fromServer.readLine();
+            fromServer.readLine();
         } catch (IOException e) {
             System.out.println("HELO failed. Aborting.");
             return;
@@ -74,10 +83,10 @@ public class SMTPConnection {
 
         toServer.writeBytes(command + CRLF);
         reply = fromServer.readLine();
-        if(parseReply(reply) != rc) {
+        if (parseReply(reply) != rc) {
             System.out.println("Error in command: " + command);
             System.out.println(reply);
-            throw new IOException();
+            throw new IOException("Send command failed");
         }
 
     }
@@ -86,12 +95,13 @@ public class SMTPConnection {
     private int parseReply(String reply) {
         StringTokenizer parser = new StringTokenizer(reply);
         String replycode = parser.nextToken();
+        replycode = replycode.split("-")[0];
         return (new Integer(replycode)).intValue();
     }
 
     /* Destructor. Closes the connection if something bad happens. */
     protected void finalize() throws Throwable {
-        if(isConnected) {
+        if (isConnected) {
             close();
         }
         super.finalize();
